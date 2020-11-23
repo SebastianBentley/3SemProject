@@ -2,6 +2,8 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dtos.BoredDTO;
 import dtos.FoodDTO;
 import dtos.CombinedDTO;
@@ -9,6 +11,8 @@ import dtos.KanyeDTO;
 import dtos.QuoteDTO;
 import dtos.RandomDogDTO;
 import entities.User;
+import errorhandling.API_Exception;
+import facades.UserFacade;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -40,8 +44,9 @@ public class DemoResource {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Gson gson = new Gson();
-
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
+ 
+
     @Context
     private UriInfo context;
 
@@ -88,6 +93,8 @@ public class DemoResource {
         return "{\"msg\": \"Hello to (admin) User: " + thisuser + "\"}";
     }
 
+    
+
     @GET
     @Path("extern")
     @Produces(MediaType.APPLICATION_JSON)
@@ -110,7 +117,6 @@ public class DemoResource {
 //                return randomQuoteDTO;
 //            }
 //        };
-
 //        Callable<FoodDTO> foodTask = new Callable<FoodDTO>() {
 //            @Override
 //            public FoodDTO call() throws Exception {
@@ -119,7 +125,6 @@ public class DemoResource {
 //                return foodDTO;
 //            }
 //        };
-
         Callable<BoredDTO> boredTask = new Callable<BoredDTO>() {
             @Override
             public BoredDTO call() throws Exception {
@@ -153,7 +158,5 @@ public class DemoResource {
         String json = GSON.toJson(combined);
         return json;
     }
-
-
 
 }
