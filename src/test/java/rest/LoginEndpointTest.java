@@ -31,7 +31,7 @@ public class LoginEndpointTest {
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
     private static EntityManagerFactory emf;
-    
+
     static HttpServer startServer() {
         ResourceConfig rc = ResourceConfig.forApplication(new ApplicationConfig());
         return GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc);
@@ -54,7 +54,7 @@ public class LoginEndpointTest {
     public static void closeTestServer() {
         //Don't forget this, if you called its counterpart in @BeforeAll
         EMF_Creator.endREST_TestWithDB();
-        
+
         httpServer.shutdownNow();
     }
 
@@ -94,8 +94,8 @@ public class LoginEndpointTest {
     private static String securityToken;
 
     //Utility method to login and set the returned securityToken
-    private static void login(String role, String password) {
-        String json = String.format("{username: \"%s\", password: \"%s\"}", role, password);
+    private static void login(String username, String password) {
+        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
         securityToken = given()
                 .contentType("application/json")
                 .body(json)
@@ -103,6 +103,18 @@ public class LoginEndpointTest {
                 .when().post("/login")
                 .then()
                 .extract().path("token");
+        //System.out.println("TOKEN ---> " + securityToken);
+    }
+
+    //Utility method to register and set the returned securityToken, and have a user role
+    private static void register(String username, String password) {
+        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
+        given()
+                .contentType("application/json")
+                .body(json)
+                //.when().post("/api/login")
+                .when().post("/login/createUser")
+                .then().statusCode(200);
         //System.out.println("TOKEN ---> " + securityToken);
     }
 
@@ -136,6 +148,20 @@ public class LoginEndpointTest {
                 .get("/info/admin").then()
                 .statusCode(200)
                 .body("msg", equalTo("Hello to (admin) User: admin"));
+    }
+
+    @Test
+    public void testCreateUser() {
+        register("fiskemand", "kartoffelmad1");
+        login("fiskemand", "kartoffelmad1");
+        given()
+                .contentType("application/json")
+                .accept(ContentType.JSON)
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/info/user").then()
+                .statusCode(200)
+                .body("msg", equalTo("Hello to User: fiskemand"));
     }
 
     @Test
@@ -220,6 +246,7 @@ public class LoginEndpointTest {
                 .body("code", equalTo(403))
                 .body("message", equalTo("Not authenticated - do login"));
     }
+
     @Test
     public void externAccess() {
         login("user_admin", "test");
