@@ -110,20 +110,32 @@ public class MovieResourceTest {
     public void serverIsRunning() {
         given().when().get("/info").then().statusCode(200);
     }
-        @Disabled
-        @Test
-    public void testRestForAdmin() {
-        login("admin", "test");
+
+    @Test
+    public void testSearchMovie() {
+        login("user", "test");
         given()
                 .contentType("application/json")
                 .accept(ContentType.JSON)
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/info/admin").then()
+                .get("/movie/search/up").then()
                 .statusCode(200)
-                .body("Title", equalTo(""));
+                .body("Title", equalTo("Up"));
     }
-    
+
+    @Test
+    public void testSearchMovieDoesntExist() {
+        login("user", "test");
+        given()
+                .contentType("application/json")
+                .accept(ContentType.JSON)
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/movie/search/æææååååppopplæællkjl").then()
+                .statusCode(404)
+                .body("message", equalTo("Movie not found"));
+    }
 
 //    //Utility method to register and set the returned securityToken, and have a user role
 //    private static void register(String username, String password) {

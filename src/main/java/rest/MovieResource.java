@@ -66,9 +66,7 @@ public class MovieResource {
         } catch (IOException e) {
             throw new MovieNotFoundException();
         }
-
         ResponseDTO rDTO = gson.fromJson(movie, ResponseDTO.class);
-        System.out.println(rDTO.getResponse());
         if (rDTO.getResponse().equals("False")) {
             throw new MovieNotFoundException();
         } else {
