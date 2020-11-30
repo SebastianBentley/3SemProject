@@ -28,15 +28,15 @@ public class Movie implements Serializable {
     @Column(name = "movie_name")
     private String title;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "likes", length = 25)
-    private int likes = 0;
+//    @Basic(optional = false)
+//    @NotNull
+//    @Column(name = "likes", length = 25)
+    private int likes;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "dislikes", length = 25)
-    private int dislikes = 0;
+//    @Basic(optional = false)
+//    @NotNull
+//    @Column(name = "dislikes", length = 25)
+    private int dislikes;
 
     @ManyToMany(mappedBy = "movieList")
     private List<User> userList;
@@ -46,6 +46,8 @@ public class Movie implements Serializable {
 
     public Movie(String title) {
         this.title = title;
+        likes = 0;
+        dislikes = 0;
     }
 
     public String getTitle() {
@@ -86,6 +88,14 @@ public class Movie implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    
+    public void downVote() {
+        dislikes++;
+    }
+    
+    public void upVote() {
+        likes++;
     }
 
 }
