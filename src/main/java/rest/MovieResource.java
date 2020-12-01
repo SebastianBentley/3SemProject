@@ -97,7 +97,7 @@ public class MovieResource {
         int upvotes = MOVIE_FACADE.getUpvotesByTitle(title);
         int downvotes = MOVIE_FACADE.getDownvotesByTitle(title);
         return "{ \"upvotes\": " + upvotes + ",\n"
-                + "\"downvote\":" + downvotes
+                + "\"downvotes\":" + downvotes
                 + "}";
     }
 
