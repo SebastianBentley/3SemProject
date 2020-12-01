@@ -48,6 +48,10 @@ public class MovieDTO {
         this.Response = Response;
     }
 
+    public MovieDTO(String Title) {
+        this.Title = Title;
+    }
+
     public String getTitle() {
         return Title;
     }

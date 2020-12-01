@@ -1,9 +1,14 @@
 package facades;
 
+import dtos.MovieDTO;
+import entities.Movie;
 import entities.Role;
 import entities.User;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import security.errorhandling.AuthenticationException;
 
 /**
@@ -64,6 +69,69 @@ public class UserFacade {
         }
 
         return user;
+    }
+
+    private static boolean movieExists(String movieTitle) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Movie> query = em.createQuery("SELECT a FROM Movie a WHERE a.title = :title", Movie.class);
+            query.setParameter("title", movieTitle);
+            List<Movie> adr = query.getResultList();
+            if (adr.isEmpty()) {
+                return false;
+            } else {
+                return true;
+            }
+        } finally {
+            em.close();
+        }
+    }
+
+    public static void addMovieToSaved(String movieTitle, String userName) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> userQuery = em.createQuery("SELECT a FROM User a WHERE a.userName = :username", User.class);
+            userQuery.setParameter("username", userName);
+            List<User> adr2 = userQuery.getResultList();
+            User usr = adr2.get(0);
+
+            if (movieExists(movieTitle)) {
+                TypedQuery<Movie> movieQuery = em.createQuery("SELECT a FROM Movie a WHERE a.title = :title", Movie.class);
+
+                movieQuery.setParameter("title", movieTitle);
+                List<Movie> adr = movieQuery.getResultList();
+                Movie mov = adr.get(0);
+                em.getTransaction().begin();
+                usr.addMovie(mov);
+                em.getTransaction().commit();
+            } else {
+                em.getTransaction().begin();
+                Movie mov = new Movie(movieTitle);
+                em.persist(mov);
+                usr.addMovie(mov);
+                em.getTransaction().commit();
+            }
+        } finally {
+            em.close();
+        }
+    }
+
+    public static ArrayList<MovieDTO> getSavedListByUser(String userName) {
+        ArrayList<MovieDTO> movList = new ArrayList<MovieDTO>();
+        EntityManager em = emf.createEntityManager();
+        User usr;
+        try {
+            TypedQuery<User> userQuery = em.createQuery("SELECT a FROM User a WHERE a.userName = :username", User.class);
+            userQuery.setParameter("username", userName);
+            List<User> adr2 = userQuery.getResultList();
+            usr = adr2.get(0);
+            for (Movie m : usr.getMovieList()) {
+                movList.add(new MovieDTO(m.getTitle()));
+            }
+        } finally {
+            em.close();
+        }
+            return movList;
     }
 
 }

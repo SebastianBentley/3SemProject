@@ -4,10 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dtos.MovieDTO;
+import entities.Movie;
 import entities.User;
 import errorhandling.API_Exception;
+import errorhandling.MovieNotFoundException;
+import facades.MovieFacade;
 import facades.UserFacade;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -24,9 +29,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
+import static rest.MovieResource.MOVIE_FACADE;
 import utils.EMF_Creator;
 import utils.HttpUtils;
 
@@ -39,6 +47,7 @@ public class DemoResource {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Gson gson = new Gson();
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
+    public static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
  
 
     @Context
@@ -86,7 +95,27 @@ public class DemoResource {
         String thisuser = securityContext.getUserPrincipal().getName();
         return "{\"msg\": \"Hello to (admin) User: " + thisuser + "\"}";
     }
-
+    
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("user/addtosaved")
+    public String addToSaved(String jsonString) throws IOException, MovieNotFoundException {
+        String username;
+        String title;
+        JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+        username = json.get("Title").getAsString();
+        title = json.get("username").getAsString();
+        USER_FACADE.addMovieToSaved(title, username);
+        return "{\"msg\":\"Movie saved\"}";
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("user/getsavedlist/{username}")
+    public String getSavedList(@PathParam("username") String username) throws MovieNotFoundException {
+        ArrayList<MovieDTO> savedList = USER_FACADE.getSavedListByUser(username);
+        return gson.toJson(savedList);
+    }
     
 //
 //    @GET
