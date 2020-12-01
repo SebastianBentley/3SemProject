@@ -6,25 +6,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dtos.MovieDTO;
 import dtos.ResponseDTO;
-import entities.User;
-import errorhandling.API_Exception;
+import entities.Movie;
 import errorhandling.MovieNotFoundException;
 import facades.MovieFacade;
-import facades.UserFacade;
+
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import javax.annotation.security.RolesAllowed;
-import javax.json.JsonString;
-import javax.persistence.EntityManager;
+
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -43,9 +32,8 @@ public class MovieResource {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Gson gson = new Gson();
 
-    
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
-        public static final MovieFacade MOVIE_FACADE = MovieFacade.getMovieFacade(EMF);
+    public static final MovieFacade MOVIE_FACADE = MovieFacade.getMovieFacade(EMF);
 
     private final String apiKey = "&apikey=d2448796";
     @Context
@@ -101,5 +89,19 @@ public class MovieResource {
         MOVIE_FACADE.upvoteMovie(title);
         return "{\"msg\":\"Movie upvoted\"}";
     }
-    
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("rating/getrating")
+    public String getMovieUpvotes(String jsonString) throws MovieNotFoundException {
+        String title;
+        JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+        title = json.get("Title").getAsString();
+        int upvotes = MOVIE_FACADE.getUpvotesByTitle(title);
+        int downvotes = MOVIE_FACADE.getDownvotesByTitle(title);
+        return "{ \"upvotes\": " + upvotes + ",\n"
+                + "\"downvote\":" + downvotes
+                + "}";
+    }
+
 }

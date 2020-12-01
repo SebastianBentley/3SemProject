@@ -1,13 +1,13 @@
 package facades;
 
 import entities.Movie;
-import entities.Role;
-import entities.User;
+import errorhandling.MovieNotFoundException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,6 +96,34 @@ public class MovieFacadeTest {
         List<Movie> adr = query.getResultList();
         assertEquals(3, adr.size());
         assertEquals(1, adr.get(2).getDislikes());
+    }
+
+    @Test
+    public void testGetUpvotesByTitle() throws MovieNotFoundException {
+        facade.upvoteMovie("ostemad");
+        int upvotes = facade.getUpvotesByTitle("ostemad");
+        assertEquals(1, upvotes);
+    }
+
+    @Test
+    public void testGetDownvotesByTitle() throws MovieNotFoundException {
+        facade.downvoteMovie("juicen");
+        int downvotes = facade.getDownvotesByTitle("juicen");
+        assertEquals(1, downvotes);
+    }
+
+    @Test
+    public void testGetDownvotesByTitleMovieNotFound() {
+        Assertions.assertThrows(MovieNotFoundException.class, () -> {
+            facade.getDownvotesByTitle("thiswontexistforsure");
+        });
+    }
+
+    @Test
+    public void testGetUpvotesByTitleMovieNotFound() {
+        Assertions.assertThrows(MovieNotFoundException.class, () -> {
+            facade.getUpvotesByTitle("nejdetherfindeseikke");
+        });
     }
 
 }

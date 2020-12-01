@@ -6,6 +6,7 @@
 package facades;
 
 import entities.Movie;
+import errorhandling.MovieNotFoundException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -74,8 +75,8 @@ public class MovieFacade {
             em.close();
         }
     }
-    
-        public static void upvoteMovie(String movieTitle) {
+
+    public static void upvoteMovie(String movieTitle) {
         EntityManager em = emf.createEntityManager();
         try {
             if (movieExists(movieTitle)) {
@@ -93,6 +94,38 @@ public class MovieFacade {
                 mov.upVote();
                 em.getTransaction().commit();
             }
+        } finally {
+            em.close();
+        }
+    }
+
+    public int getDownvotesByTitle(String title) throws MovieNotFoundException {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Movie> query = em.createQuery("SELECT a FROM Movie a WHERE a.title = :title", Movie.class);
+            query.setParameter("title", title);
+            List<Movie> adr = query.getResultList();
+            if (adr.isEmpty()) {
+                throw new MovieNotFoundException();
+            }
+            Movie mov = adr.get(0);
+            return mov.getDislikes();
+        } finally {
+            em.close();
+        }
+    }
+
+    public int getUpvotesByTitle(String title) throws MovieNotFoundException {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Movie> query = em.createQuery("SELECT a FROM Movie a WHERE a.title = :title", Movie.class);
+            query.setParameter("title", title);
+            List<Movie> adr = query.getResultList();
+            if (adr.isEmpty()) {
+                throw new MovieNotFoundException();
+            }
+            Movie mov = adr.get(0);
+            return mov.getLikes();
         } finally {
             em.close();
         }
