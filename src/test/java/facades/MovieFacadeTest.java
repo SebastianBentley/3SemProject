@@ -65,17 +65,37 @@ public class MovieFacadeTest {
 
     @Test
     public void testDownvoteExistingMovie() {
-
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        facade.downvoteMovie("morfar");
+        TypedQuery<Movie> query = em.createQuery("SELECT a FROM Movie a WHERE a.title = :title", Movie.class);
+        query.setParameter("title", "morfar");
+        List<Movie> adr = query.getResultList();
+        Movie mov = adr.get(0);
+        em.getTransaction().commit();
+        assertEquals(1, mov.getDislikes());
     }
 
     @Test
     public void testUpvoteNewMovie() {
-
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        facade.upvoteMovie("testtingenLOL");
+        TypedQuery<Movie> query = em.createQuery("SELECT a FROM Movie a", Movie.class);
+        List<Movie> adr = query.getResultList();
+        assertEquals(3, adr.size());
+        assertEquals(1, adr.get(2).getLikes());
     }
 
     @Test
     public void testDownvoteNewMovie() {
-
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        facade.downvoteMovie("juicekartoffel");
+        TypedQuery<Movie> query = em.createQuery("SELECT a FROM Movie a", Movie.class);
+        List<Movie> adr = query.getResultList();
+        assertEquals(3, adr.size());
+        assertEquals(1, adr.get(2).getDislikes());
     }
 
 }
