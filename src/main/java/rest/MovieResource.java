@@ -92,11 +92,8 @@ public class MovieResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("rating/getrating")
-    public String getMovieUpvotes(String jsonString) throws MovieNotFoundException {
-        String title;
-        JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
-        title = json.get("Title").getAsString();
+    @Path("rating/getrating/{title}")
+    public String getMovieUpvotes(@PathParam("title") String title) throws MovieNotFoundException {
         int upvotes = MOVIE_FACADE.getUpvotesByTitle(title);
         int downvotes = MOVIE_FACADE.getDownvotesByTitle(title);
         return "{ \"upvotes\": " + upvotes + ",\n"
