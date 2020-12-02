@@ -103,8 +103,8 @@ public class DemoResource {
         String username;
         String title;
         JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
-        username = json.get("Title").getAsString();
-        title = json.get("username").getAsString();
+        username = json.get("username").getAsString();
+        title = json.get("Title").getAsString();
         USER_FACADE.addMovieToSaved(title, username);
         return "{\"msg\":\"Movie saved\"}";
     }
