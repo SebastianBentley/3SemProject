@@ -5,8 +5,10 @@
  */
 package facades;
 
+import dtos.MovieDTO;
 import entities.Movie;
 import errorhandling.MovieNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -129,6 +131,21 @@ public class MovieFacade {
         } finally {
             em.close();
         }
+    }
+
+    public ArrayList<MovieDTO> top5() {
+        ArrayList<MovieDTO> movList = new ArrayList<MovieDTO>();
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Movie> userQuery = em.createQuery("SELECT a FROM Movie a ORDER BY a.likes DESC", Movie.class);
+            List<Movie> movs = userQuery.setMaxResults(5).getResultList();
+            for (Movie m : movs) {
+                movList.add(new MovieDTO(m.getTitle()));
+            }
+        } finally {
+            em.close();
+        }
+        return movList;
     }
 
 }

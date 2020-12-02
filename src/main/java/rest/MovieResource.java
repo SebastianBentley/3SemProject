@@ -100,5 +100,16 @@ public class MovieResource {
                 + "\"downvotes\":" + downvotes
                 + "}";
     }
+    
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("top5")
+    public String getTop5() {
+        return GSON.toJson(MOVIE_FACADE.top5());
+    }
+    
+    
+    
 
 }
