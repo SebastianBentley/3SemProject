@@ -87,7 +87,7 @@ public class UserFacade {
         }
     }
 
-    public static void addMovieToSaved(String movieTitle, String userName) {
+    public void addMovieToSaved(String movieTitle, String userName) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<User> userQuery = em.createQuery("SELECT a FROM User a WHERE a.userName = :username", User.class);
@@ -101,9 +101,20 @@ public class UserFacade {
                 movieQuery.setParameter("title", movieTitle);
                 List<Movie> adr = movieQuery.getResultList();
                 Movie mov = adr.get(0);
-                em.getTransaction().begin();
-                usr.addMovie(mov);
-                em.getTransaction().commit();
+
+                boolean movieExists = false;
+                for (Movie m : usr.getMovieList()) {
+                    if (m.getTitle().equals(mov.getTitle())) {
+                        movieExists = true;
+                    }
+                }
+
+                if (!movieExists) {
+                    em.getTransaction().begin();
+                    usr.addMovie(mov);
+                    em.getTransaction().commit();
+                }
+
             } else {
                 em.getTransaction().begin();
                 Movie mov = new Movie(movieTitle);
@@ -116,7 +127,7 @@ public class UserFacade {
         }
     }
 
-    public static ArrayList<MovieDTO> getSavedListByUser(String userName) {
+    public ArrayList<MovieDTO> getSavedListByUser(String userName) {
         ArrayList<MovieDTO> movList = new ArrayList<MovieDTO>();
         EntityManager em = emf.createEntityManager();
         User usr;
@@ -131,7 +142,7 @@ public class UserFacade {
         } finally {
             em.close();
         }
-            return movList;
+        return movList;
     }
 
 }

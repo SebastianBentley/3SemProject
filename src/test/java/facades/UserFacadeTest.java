@@ -1,8 +1,11 @@
 package facades;
 
+import dtos.MovieDTO;
+import entities.Movie;
 import utils.EMF_Creator;
 import entities.Role;
 import entities.User;
+import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -48,7 +51,11 @@ public class UserFacadeTest {
             em.getTransaction().begin();
             em.createQuery("DELETE from User").executeUpdate();
             em.persist(new User("Some txt", "More text"));
-            em.persist(new User("aaa", "bbb"));
+            User user = new User("aaa", "bbb");
+            Movie movie = new Movie("testMovie");
+            user.addMovie(movie);
+            em.persist(movie);
+            em.persist(user);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -63,13 +70,35 @@ public class UserFacadeTest {
     // TODO: Delete or change this method 
     @Test
     public void testGetVerifiedUser() throws AuthenticationException {
-        assertEquals("aaa", facade.getVeryfiedUser("aaa", "bbb").getUserName(), "Expects two rows in the database");
+        assertEquals("aaa", facade.getVeryfiedUser("aaa", "bbb").getUserName(), "Expects correct name for a user");
     }
 
     @Test
     public void testRegisterUser() throws AuthenticationException {
         facade.registerUser("fiske", "juice");
-        assertEquals("fiske", facade.getVeryfiedUser("fiske", "juice").getUserName(), "Expects two rows in the database");
+        assertEquals("fiske", facade.getVeryfiedUser("fiske", "juice").getUserName(), "Expects user exist after register");
+    }
+    
+    
+    @Test
+    public void testGetSavedListSize(){
+        ArrayList<MovieDTO> result = facade.getSavedListByUser("aaa");
+        assertEquals("testMovie", result.get(0).getTitle(), "assert that name of movie matches");
+    }
+    
+    @Test
+    public void testAddToSavedListMovieDoesNotExist(){
+        facade.addMovieToSaved("FiskeJuiceTheMovie", "aaa");
+        ArrayList<MovieDTO> result = facade.getSavedListByUser("aaa");
+        assertEquals("FiskeJuiceTheMovie", result.get(1).getTitle(), "assert that name of added movie matches");
+    }
+    
+    
+    @Test
+    public void testAddToSavedListMovieExist(){
+        facade.addMovieToSaved("testMovie", "aaa");
+        ArrayList<MovieDTO> result = facade.getSavedListByUser("aaa");
+        assertEquals(1, result.size(), "assert that no movie was added, because it already exist");
     }
 
     @Test
