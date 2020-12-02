@@ -133,7 +133,7 @@ public class MovieFacade {
         }
     }
 
-    public ArrayList<MovieDTO> top5() {
+    public ArrayList<MovieDTO> getTop5() {
         ArrayList<MovieDTO> movList = new ArrayList<MovieDTO>();
         EntityManager em = emf.createEntityManager();
         try {

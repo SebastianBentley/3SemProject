@@ -106,7 +106,7 @@ public class MovieResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("top5")
     public String getTop5() {
-        return GSON.toJson(MOVIE_FACADE.top5());
+        return GSON.toJson(MOVIE_FACADE.getTop5());
     }
     
     

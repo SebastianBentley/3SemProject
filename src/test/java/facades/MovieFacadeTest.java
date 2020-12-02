@@ -1,5 +1,6 @@
 package facades;
 
+import dtos.MovieDTO;
 import entities.Movie;
 import errorhandling.MovieNotFoundException;
 import java.util.List;
@@ -124,6 +125,44 @@ public class MovieFacadeTest {
         Assertions.assertThrows(MovieNotFoundException.class, () -> {
             facade.getUpvotesByTitle("nejdetherfindeseikke");
         });
+    }
+
+    @Test
+    public void testGetTop5() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Movie mov1 = new Movie("film1");
+        Movie mov2 = new Movie("film2");
+        Movie mov3 = new Movie("film3");
+        Movie mov4 = new Movie("film4");
+        Movie mov5 = new Movie("film5");
+        em.persist(mov1);
+        em.persist(mov2);
+        em.persist(mov3);
+        em.persist(mov4);
+        em.persist(mov5);
+        mov1.upVote();
+        mov1.upVote();
+        mov1.upVote();
+        mov1.upVote();
+        mov2.upVote();
+        mov2.upVote();
+        mov2.upVote();
+        mov2.upVote();
+        mov2.upVote();
+        mov3.upVote();
+        mov3.upVote();
+        mov3.upVote();
+        mov4.upVote();
+        mov4.upVote();
+        mov5.upVote();
+        em.getTransaction().commit();
+        List<MovieDTO> mDtos = facade.getTop5();
+        assertEquals(mDtos.get(0).getTitle(), mov2.getTitle());
+        assertEquals(mDtos.get(1).getTitle(), mov1.getTitle());
+        assertEquals(mDtos.get(2).getTitle(), mov3.getTitle());
+        assertEquals(mDtos.get(3).getTitle(), mov4.getTitle());
+        assertEquals(mDtos.get(4).getTitle(), mov5.getTitle());
     }
 
 }
