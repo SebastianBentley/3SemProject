@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/SebastianBentley/3SemProject.svg?branch=main)](https://travis-ci.com/SebastianBentley/3SemProject)
+[![Build Status](https://travis-ci.com/SebastianBentley/3SemProject.svg?branch=master)](https://travis-ci.com/SebastianBentley/3SemProject)
 
 *This project is meant as start code for semester/exam projects for 3.sem*
 
