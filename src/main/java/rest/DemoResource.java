@@ -48,7 +48,6 @@ public class DemoResource {
     private Gson gson = new Gson();
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     public static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
- 
 
     @Context
     private UriInfo context;
@@ -95,7 +94,7 @@ public class DemoResource {
         String thisuser = securityContext.getUserPrincipal().getName();
         return "{\"msg\": \"Hello to (admin) User: " + thisuser + "\"}";
     }
-    
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("user/addtosaved")
@@ -108,7 +107,7 @@ public class DemoResource {
         USER_FACADE.addMovieToSaved(title, username);
         return "{\"msg\":\"Movie saved\"}";
     }
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("user/getsavedlist/{username}")
@@ -116,19 +115,24 @@ public class DemoResource {
         ArrayList<MovieDTO> savedList = USER_FACADE.getSavedListByUser(username);
         return gson.toJson(savedList);
     }
-    
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("user/changepassword")
     public String changePassword(String jsonString) throws MovieNotFoundException {
         String username;
         String newPassword;
-        
+
         JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
         username = json.get("username").getAsString();
         newPassword = json.get("password").getAsString();
-        USER_FACADE.changePassword(username, newPassword);
-        return "{\"msg\":\"Your password have been changed\"}";
+        if (newPassword.equals("") || newPassword.isEmpty()) {
+            return "{\"msg\":\"Password can not be empty!\"}";
+        } else {
+            USER_FACADE.changePassword(username, newPassword);
+            return "{\"msg\":\"Your password has been changed\"}";
+        }
+
     }
 //
 //    @GET

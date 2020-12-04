@@ -127,6 +127,31 @@ public class DemoResourceTest {
                 .statusCode(200)
                 .body("[0].Title", equalTo("testMovie"));
     }
+    
+    @Test
+    public void testChangePasswordEmpty() {
+        String username = "user";
+        String password = "";
+        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
+        given()
+                .contentType("application/json")
+                .body(json)
+                .when().post("/info/user/changepassword")
+                .then().statusCode(200)
+                .body("msg", equalTo("Password can not be empty!"));;
+    }
+    
+        @Test
+    public void testChangePassword() {
+        String username = "user";
+        String password = "juiceKartoffel";
+        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
+        given()
+                .contentType("application/json")
+                .body(json)
+                .when().post("/info/user/changepassword")
+                .then().statusCode(200)
+                .body("msg", equalTo("Your password has been changed"));;
+    }
 
-  
 }
