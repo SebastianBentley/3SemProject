@@ -119,7 +119,7 @@ public class DemoResource {
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("user/changepassword/{password}")
+    @Path("user/changepassword")
     public String changePassword(String jsonString) throws MovieNotFoundException {
         String username;
         String newPassword;
