@@ -145,4 +145,22 @@ public class UserFacade {
         return movList;
     }
 
+    public String changePassword(String userName, String newPassword) {
+        EntityManager em = emf.createEntityManager();
+        User usr;
+        try {
+            TypedQuery<User> userQuery = em.createQuery("SELECT a FROM User a WHERE a.userName = :username", User.class);
+            userQuery.setParameter("username", userName);
+            List<User> adr2 = userQuery.getResultList();
+            usr = adr2.get(0);
+
+            em.getTransaction().begin();
+            usr.setUserPass(newPassword);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return usr.getUserName();
+    }
+
 }

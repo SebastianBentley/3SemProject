@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ public class UserFacadeTest {
 
     private static EntityManagerFactory emf;
     private static UserFacade facade;
+    private User user;
 
     public UserFacadeTest() {
     }
@@ -51,7 +53,7 @@ public class UserFacadeTest {
             em.getTransaction().begin();
             em.createQuery("DELETE from User").executeUpdate();
             em.persist(new User("Some txt", "More text"));
-            User user = new User("aaa", "bbb");
+            user = new User("aaa", "bbb");
             Movie movie = new Movie("testMovie");
             user.addMovie(movie);
             em.persist(movie);
@@ -61,7 +63,7 @@ public class UserFacadeTest {
             em.close();
         }
     }
- 
+
     @AfterEach
     public void tearDown() {
 //        Remove any data after each test was run
@@ -78,31 +80,29 @@ public class UserFacadeTest {
         facade.registerUser("fiske", "juice");
         assertEquals("fiske", facade.getVeryfiedUser("fiske", "juice").getUserName(), "Expects user exist after register");
     }
-    
-    
+
     @Test
-    public void testGetSavedListSize(){
+    public void testGetSavedListSize() {
         ArrayList<MovieDTO> result = facade.getSavedListByUser("aaa");
         assertEquals("testMovie", result.get(0).getTitle(), "assert that name of movie matches");
     }
-    
+
     @Test
-    public void testAddToSavedListMovieDoesNotExist(){
+    public void testAddToSavedListMovieDoesNotExist() {
         facade.addMovieToSaved("FiskeJuiceTheMovie", "aaa");
         ArrayList<MovieDTO> result = facade.getSavedListByUser("aaa");
         assertEquals("FiskeJuiceTheMovie", result.get(1).getTitle(), "assert that name of added movie matches");
     }
-    
-    
+
     @Test
-    public void testAddToSavedListMovieExist(){
+    public void testAddToSavedListMovieExist() {
         facade.addMovieToSaved("testMovie", "aaa");
         ArrayList<MovieDTO> result = facade.getSavedListByUser("aaa");
         assertEquals(1, result.size(), "assert that no movie was added, because it already exist");
     }
 
     @Test
-    void testRegisteredUserEmptyUsername() {
+    public void testRegisteredUserEmptyUsername() {
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             facade.registerUser("", "juice");
@@ -110,10 +110,27 @@ public class UserFacadeTest {
     }
 
     @Test
-    void testRegisteredUserEmptyPassword() {
+    public void testRegisteredUserEmptyPassword() {
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             facade.registerUser("fiske", "");
         });
+    }
+
+    @Test
+    public void testChangePassword() {
+        EntityManager em = emf.createEntityManager();
+        User newuser;
+        String userName = "aaa";
+        String newPassword = "aab";
+        facade.changePassword(userName, newPassword);
+        try {
+            em.getTransaction().begin();
+            newuser = em.find(User.class, userName);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        assertTrue(newuser.verifyPassword("aab"));
     }
 }

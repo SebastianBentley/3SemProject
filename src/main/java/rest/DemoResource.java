@@ -117,6 +117,19 @@ public class DemoResource {
         return gson.toJson(savedList);
     }
     
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("user/changepassword/{password}")
+    public String changePassword(String jsonString) throws MovieNotFoundException {
+        String username;
+        String newPassword;
+        
+        JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+        username = json.get("username").getAsString();
+        newPassword = json.get("password").getAsString();
+        USER_FACADE.changePassword(username, newPassword);
+        return "{\"msg\":\"Your password have been changed\"}";
+    }
 //
 //    @GET
 //    @Path("extern")
