@@ -3,16 +3,18 @@ package facades;
 import dtos.MovieDTO;
 import dtos.UserDTO;
 import entities.Movie;
+import entities.Role;
 import entities.User;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import security.errorhandling.AuthenticationException;
 
 public class AdminFacade {
-    
+
     private static EntityManagerFactory emf;
     private static AdminFacade instance;
 
@@ -45,25 +47,27 @@ public class AdminFacade {
         }
         return user;
     }
-    
-    
-    public ArrayList<UserDTO> getAllUsers(){
+
+    public ArrayList<UserDTO> getAllUsers() {
         ArrayList<UserDTO> userList = new ArrayList<>();
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<User> userQuery = em.createQuery("SELECT a FROM User a", User.class);
             List<User> users = userQuery.getResultList();
             for (User u : users) {
-                userList.add(new UserDTO(u.getUserName()));
+                for (Role r : u.getRoleList()) {
+                    if (r.getRoleName().equals("user")) {
+                        userList.add(new UserDTO(u.getUserName()));
+                    }
+                }
             }
         } finally {
             em.close();
         }
         return userList;
     }
-    
-    
-     public ArrayList<MovieDTO> getSavedListByUser(String userName) {
+
+    public ArrayList<MovieDTO> getSavedListByUser(String userName) {
         ArrayList<MovieDTO> movList = new ArrayList<MovieDTO>();
         EntityManager em = emf.createEntityManager();
         User usr;
@@ -80,6 +84,17 @@ public class AdminFacade {
         }
         return movList;
     }
-    
-    
+
+    public void deleteUser(String username) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query q = em.createQuery("DELETE FROM User c WHERE c.userName = :username");
+            q.setParameter("username", username).executeUpdate();
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
 }

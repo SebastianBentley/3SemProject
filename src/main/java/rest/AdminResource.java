@@ -6,7 +6,9 @@ import facades.AdminFacade;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -39,8 +41,16 @@ public class AdminResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("allUsers")
     @RolesAllowed("admin")
-    public String getTop5() {
+    public String getAllUsers() {
         return GSON.toJson(ADMIN_FACADE.getAllUsers());
     }
-
+    
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("deleteuser/{username}")
+    @RolesAllowed("admin")
+    public String adminDeleteUser(@PathParam("username") String username) {
+        ADMIN_FACADE.deleteUser(username);
+        return "{\"msg\":\"User " + username + " has been deleted\"}";
+    }   
 }

@@ -12,9 +12,9 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
-
 public class AdminFacadeTest {
 
     private static EntityManagerFactory emf;
@@ -71,23 +71,22 @@ public class AdminFacadeTest {
     @Test
     public void getAllUsersSize() {
         ArrayList<UserDTO> list = facade.getAllUsers();
-        assertEquals(2, list.size());
-    }
-
-    @Test
-    public void getAllUsersNameAdmin() {
-        ArrayList<UserDTO> list = facade.getAllUsers();
-        UserDTO user = list.get(0);
-        assertEquals("admin", user.getUsername());
-
+        assertEquals(1, list.size());
     }
 
     @Test
     public void getAllUsersNameUser() {
         ArrayList<UserDTO> list = facade.getAllUsers();
-        UserDTO user = list.get(1);
+        UserDTO user = list.get(0);
         assertEquals("user", user.getUsername());
-
     }
-
+    
+    @Test
+    public void deleteUser() {
+        int userSize = facade.getAllUsers().size();
+        facade.deleteUser("user");
+        int newUserSize = facade.getAllUsers().size();
+        assertEquals(userSize-1, newUserSize);
+    }
+     
 }

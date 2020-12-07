@@ -15,9 +15,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
-
 public class AdminResourceTest {
 
     private static final int SERVER_PORT = 7777;
@@ -105,11 +105,9 @@ public class AdminResourceTest {
     public void serverIsRunning() {
         given().when().get("/info").then().statusCode(200);
     }
-    
-    
-    
+
     @Test
-    public void testAutorizedUserCannotAccesAdminPage() {
+    public void testAutorizedUserCannotAccessAdminPage() {
         login("user", "test");
         given()
                 .contentType("application/json")
@@ -118,9 +116,9 @@ public class AdminResourceTest {
                 .get("/admin/allUsers").then() //Call Admin endpoint as user
                 .statusCode(401);
     }
-    
+
     @Test
-    public void testAutorizedAdminCanAccesAdminPage() {
+    public void testAutorizedAdminCanAccessAdminPage() {
         login("admin", "test");
         given()
                 .contentType("application/json")
@@ -130,4 +128,25 @@ public class AdminResourceTest {
                 .statusCode(200);
     }
 
+    @Test
+    public void testAuthorizedUserCannotAccessDeletePerson() {
+        login("user", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/deleteuser/user").then() //Call Admin endpoint as user
+                .statusCode(405);
+    }
+
+    @Test
+    public void testAuthorizedAdminCanAccessDeleteUser() {
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .post("/admin/deleteuser/user").then() //Call Admin endpoint as user
+                .statusCode(200);
+    }
 }
