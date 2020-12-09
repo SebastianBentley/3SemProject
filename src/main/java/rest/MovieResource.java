@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dtos.CombinedDTO;
 import dtos.MovieDTO;
 import dtos.ResponseDTO;
 import entities.Movie;
@@ -11,6 +12,13 @@ import errorhandling.MovieNotFoundException;
 import facades.MovieFacade;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -28,6 +36,7 @@ import utils.HttpUtils;
 
 @Path("movie")
 public class MovieResource {
+    private ExecutorService threadPool = Executors.newCachedThreadPool();
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Gson gson = new Gson();
@@ -109,7 +118,48 @@ public class MovieResource {
         return GSON.toJson(MOVIE_FACADE.getTop5());
     }
     
-    
+    @GET
+    @Path("extern")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getJokes() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+        
+
+        Callable<MovieDTO> gotTask = new Callable<MovieDTO>() {
+            @Override
+            public MovieDTO call() throws Exception {
+                String got = HttpUtils.fetchData("http://www.omdbapi.com/?t=game+of+thrones" + apiKey);
+                MovieDTO gotDTO = gson.fromJson(got, MovieDTO.class);
+                return gotDTO;
+            }
+        };
+        Callable<MovieDTO> swTask = new Callable<MovieDTO>() {
+            @Override
+            public MovieDTO call() throws Exception {
+                String sw = HttpUtils.fetchData("http://www.omdbapi.com/?t=star+wars" + apiKey);
+                MovieDTO swDTO = gson.fromJson(sw, MovieDTO.class);
+                return swDTO;
+            }
+        };
+        Callable<MovieDTO> bbTask = new Callable<MovieDTO>() {
+            @Override
+            public MovieDTO call() throws Exception {
+                String bb = HttpUtils.fetchData("http://www.omdbapi.com/?t=breaking+bad" + apiKey);
+                MovieDTO bbDTO = gson.fromJson(bb, MovieDTO.class);
+                return bbDTO;
+            }
+        };
+
+        Future<MovieDTO> futureGot = threadPool.submit(gotTask);
+        Future<MovieDTO> futureSw = threadPool.submit(swTask);
+        Future<MovieDTO> futureHp = threadPool.submit(bbTask);
+        MovieDTO movie1 = futureGot.get(2, TimeUnit.SECONDS);
+        MovieDTO movie2 = futureSw.get(2, TimeUnit.SECONDS);
+        MovieDTO movie3 = futureHp.get(2, TimeUnit.SECONDS);
+
+        CombinedDTO combined = new CombinedDTO(movie1, movie2, movie3);
+        String json = GSON.toJson(combined);
+        return json;
+    }
     
 
 }
