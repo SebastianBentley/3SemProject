@@ -1,9 +1,7 @@
-
 package dtos;
 
-
 public class FSDTO {
-    
+
     private String name, status, species, gender, hair;
 
     public FSDTO(String name, String status, String species, String genter, String hair) {
@@ -12,6 +10,21 @@ public class FSDTO {
         this.species = species;
         this.gender = genter;
         this.hair = hair;
+        if (genter.equals("")) {
+            setGenter("N/A");
+        }
+        if (hair.equals("")) {
+            setHair("N/A");
+        }
+        if (name.equals("")) {
+            setName("N/A");
+        }
+        if (species.equals("")) {
+            setSpecies("N/A");
+        }
+        if (status.equals("")) {
+            setStatus("N/A");
+        }
     }
 
     public String getName() {
@@ -53,8 +66,5 @@ public class FSDTO {
     public void setHair(String hair) {
         this.hair = hair;
     }
- 
-    
-    
-    
+
 }

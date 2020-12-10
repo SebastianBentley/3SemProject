@@ -150,7 +150,6 @@ public class MovieResource {
         Callable<GotDTO> gotDTOTask = new Callable<GotDTO>() {
             @Override
             public GotDTO call() throws Exception {
-
                 String got = HttpUtils.fetchData("https://www.anapioficeandfire.com/api/houses/" + number);
                 GotDTO GotDTO = gson.fromJson(got, GotDTO.class);
                 return GotDTO;

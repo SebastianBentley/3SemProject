@@ -10,7 +10,7 @@ package dtos;
  * @author Mibse
  */
 public class GotDTO {
-    
+
     private String name;
     private String region;
     private String coatOfArms;
@@ -74,6 +74,5 @@ public class GotDTO {
     public void setDiedOut(String diedOut) {
         this.diedOut = diedOut;
     }
-    
-    
+
 }

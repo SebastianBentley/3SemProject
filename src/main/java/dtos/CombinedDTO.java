@@ -1,22 +1,16 @@
 package dtos;
 
-
-
-
-
 public class CombinedDTO {
+
     private String description1;
     private String description2;
     private String description3;
     private String gotName, gotRegion, gotCoat, gotFounded, gotFounder, gotDiedout;
     private String fsName, fsStatus, fsSpecies, fsGender, fsHair;
-    
-
 
     public CombinedDTO(MovieDTO movie1, MovieDTO movie2, GotDTO gotDTO, FSDTO fsDTO) {
         this.description1 = movie1.getPlot();
         this.description2 = movie2.getPlot();
-        
         this.gotName = gotDTO.getName();
         this.gotRegion = gotDTO.getRegion();
         this.gotCoat = gotDTO.getCoatOfArms();
@@ -28,6 +22,39 @@ public class CombinedDTO {
         this.fsSpecies = fsDTO.getSpecies();
         this.fsGender = fsDTO.getGenter();
         this.fsHair = fsDTO.getHair();
+        if (gotCoat.equals("") || gotCoat.isEmpty()) {
+            setGotCoat("N/A");
+        }
+        if (gotDiedout.equals("") || gotDiedout.isEmpty()) {
+            setGotDiedout("N/A");
+        }
+        if (gotFounded.equals("") || gotFounded.isEmpty()) {
+            setGotFounded("N/A");
+        }
+        if (gotFounder.equals("") || gotFounder.isEmpty()) {
+            this.gotFounder = "N/A";
+        }
+        if (gotName.equals("") || gotName.isEmpty()) {
+            setGotName("N/A");
+        }
+        if (gotRegion.equals("") || gotRegion.isEmpty()) {
+            setGotRegion("N/A");
+        }
+        if (fsGender.equals("")) {
+            setFsGender("N/A");
+        }
+        if (fsHair.equals("")) {
+            setFsHair("N/A");
+        }
+        if (fsName.equals("")) {
+            setFsName("N/A");
+        }
+        if (fsSpecies.equals("")) {
+            setFsSpecies("N/A");
+        }
+        if (fsStatus.equals("")) {
+            setFsStatus("N/A");
+        }
     }
 
     public String getDescription1() {
@@ -142,7 +169,4 @@ public class CombinedDTO {
         this.fsHair = fsHair;
     }
 
-    
-  
-    
 }
