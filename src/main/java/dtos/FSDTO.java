@@ -10,21 +10,6 @@ public class FSDTO {
         this.species = species;
         this.gender = genter;
         this.hair = hair;
-        if (genter.equals("")) {
-            setGenter("N/A");
-        }
-        if (hair.equals("")) {
-            setHair("N/A");
-        }
-        if (name.equals("")) {
-            setName("N/A");
-        }
-        if (species.equals("")) {
-            setSpecies("N/A");
-        }
-        if (status.equals("")) {
-            setStatus("N/A");
-        }
     }
 
     public String getName() {
