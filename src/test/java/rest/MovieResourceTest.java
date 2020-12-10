@@ -136,6 +136,26 @@ public class MovieResourceTest {
                 .statusCode(404)
                 .body("message", equalTo("Movie not found"));
     }
+    
+    @Test
+    public void testGetExternFetches() {
+    login("user", "test");
+    given()
+                .contentType("application/json")
+                .accept(ContentType.JSON)
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/movie/extern").then()
+                .statusCode(200);
+    }
+    
+    
+//        @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("top5")
+//    public String getTop5() {
+//        return GSON.toJson(MOVIE_FACADE.getTop5());
+//    }
 
 //    //Utility method to register and set the returned securityToken, and have a user role
 //    private static void register(String username, String password) {

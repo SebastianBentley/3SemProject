@@ -181,5 +181,4 @@ public class MovieResource {
         String json = GSON.toJson(combined);
         return json;
     }
-
 }
