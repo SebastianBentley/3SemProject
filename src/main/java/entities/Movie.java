@@ -28,14 +28,8 @@ public class Movie implements Serializable {
     @Column(name = "movie_name")
     private String title;
 
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "likes", length = 25)
     private int likes;
 
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "dislikes", length = 25)
     private int dislikes;
 
     @ManyToMany(mappedBy = "movieList")

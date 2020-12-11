@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package facades;
 
 import dtos.MovieDTO;
@@ -14,10 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 
-/**
- *
- * @author Tas
- */
 public class MovieFacade {
 
     private static EntityManagerFactory emf;
@@ -26,11 +18,6 @@ public class MovieFacade {
     private MovieFacade() {
     }
 
-    /**
-     *
-     * @param _emf
-     * @return the instance of this facade.
-     */
     public static MovieFacade getMovieFacade(EntityManagerFactory _emf) {
         if (instance == null) {
             emf = _emf;
